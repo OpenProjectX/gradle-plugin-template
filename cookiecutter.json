@@ -1,0 +1,20 @@
+{
+  "project_name": "My Gradle Plugin",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
+  "group_id": "org.openprojectx.{{ cookiecutter.project_slug.replace('-plugin', '').replace('-', '.') }}",
+  "package_name": "{{ cookiecutter.group_id }}",
+  "package_dir": "{{ cookiecutter.package_name.replace('.', '/') }}",
+  "plugin_id": "{{ cookiecutter.group_id }}",
+  "plugin_name": "{{ cookiecutter.project_slug.replace('-', ' ').title() }}",
+  "plugin_class_name": "{{ cookiecutter.project_slug.replace('-plugin', '').replace('-', ' ').title().replace(' ', '') }}",
+  "extension_name": "{{ cookiecutter.project_slug.replace('-plugin', '').replace('-', '') }}",
+  "description": "{{ cookiecutter.plugin_name }} Gradle plugin",
+  "github_username": "OpenProjectX",
+  "github_repo": "{{ cookiecutter.project_slug }}",
+  "developer_id": "OpenProjectX",
+  "developer_name": "OpenProjectX",
+  "developer_email": "admin@openprojectx.org",
+  "kotlin_version": "2.2.21",
+  "java_version": "17",
+  "_copy_without_render": ["*.jar", "**/*.jar", "./gradle/wrapper/*.jar", "gradle/wrapper/*.jar", "{{cookiecutter.project_slug}}/gradle/wrapper/gradle-wrapper.jar", "{{ cookiecutter.project_slug }}/gradle/wrapper/gradle-wrapper.jar"]
+}
