@@ -98,6 +98,7 @@ subprojects {
                         when (project.name) {
                             "plugin" -> "{{ cookiecutter.plugin_name }}"
                             "core" -> "{{ cookiecutter.plugin_name }} Core"
+                            "maven-plugin" -> "{{ cookiecutter.plugin_name }} Maven Plugin"
                             else -> project.name
                         }
                     )

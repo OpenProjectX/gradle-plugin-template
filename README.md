@@ -1,6 +1,6 @@
 # Gradle Plugin Template
 
-A [Cookiecutter](https://cookiecutter.readthedocs.io/) template for creating multi-module Gradle plugins in Kotlin. The generated project follows the structure used by `gradle-mirror`: a reusable `core` module, a `plugin` module using `java-gradle-plugin`, Gradle TestKit functional tests, a local composite-build example, and Maven Central publishing wiring.
+A [Cookiecutter](https://cookiecutter.readthedocs.io/) template for creating multi-module Gradle plugins in Kotlin. The generated project follows the structure used by `gradle-mirror`: a reusable `core` module, a `plugin` module using `java-gradle-plugin`, a `maven-plugin` module that exposes the same core logic as a Maven Mojo, Gradle TestKit functional tests, a local composite-build example, and Maven Central publishing wiring.
 
 ## Using This Template
 
@@ -33,8 +33,9 @@ GitHub's **Use this template** button copies placeholders as-is. Cookiecutter is
 
 ```text
 <project_slug>/
-├── core/                         # Reusable Kotlin library code for the plugin
+├── core/                         # Reusable Kotlin library code shared by both plugins
 ├── plugin/                       # Gradle plugin implementation and TestKit tests
+├── maven-plugin/                 # Maven plugin (Mojo) reusing the same core logic
 ├── examples/basic/               # Composite-build example using includeBuild("../..")
 ├── buildSrc/                     # Shared Gradle convention plugins
 ├── doc/user-guide.adoc           # AsciiDoc user guide rendered to HTML by `asciidoctor`
@@ -90,6 +91,27 @@ The generated project ships an AsciiDoc user guide under `doc/user-guide.adoc`. 
 ```
 
 Output is written to `build/docs` (`index.html` is the entry point). The `.github/workflows/publish-docs.yml` workflow builds and deploys this guide to GitHub Pages after each successful release.
+
+## Maven Plugin Module
+
+The `maven-plugin` module reuses the shared `core` logic to provide a Maven Mojo, so the
+plugin works from both Gradle and Maven builds. The Maven plugin descriptor
+(`META-INF/maven/plugin.xml`) is generated from the `@Mojo` annotations by the
+[`org.gradlex.maven-plugin-development`](https://github.com/gradlex-org/maven-plugin-development)
+Gradle plugin — no Maven build is required.
+
+Build it and inspect the generated descriptor:
+
+```bash
+./gradlew :maven-plugin:build
+```
+
+Once published, consumers run the goal directly (the goal prefix defaults to the plugin's
+extension name):
+
+```bash
+mvn <extension_name>:say-hello
+```
 
 ## Publishing
 
