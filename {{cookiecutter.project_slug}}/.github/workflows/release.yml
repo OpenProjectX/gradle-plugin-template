@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      gradle_args:
+        description: "Extra Gradle args for the release run, for example: --stacktrace --debug"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release-master
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'push' ||
+      (
+        github.actor != 'github-actions[bot]' &&
+        !contains(github.event.head_commit.message, '[Gradle Release Plugin]')
+      )
+
+    env:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+      EXTRA_GRADLE_ARGS: {% raw %}${{ github.event.inputs.gradle_args || '' }}{% endraw %}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: {% raw %}${{ secrets.RELEASE_GITHUB_TOKEN }}{% endraw %}
+
+      - name: Set up JDK {{ cookiecutter.java_version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "{{ cookiecutter.java_version }}"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Write signing key
+        env:
+          SIGNING_KEY_ASC: {% raw %}${{ secrets.SIGNING_KEY_ASC }}{% endraw %}
+        run: |
+          printf '%s' "$SIGNING_KEY_ASC" > "$RUNNER_TEMP/signing-key.asc"
+
+      - name: Run release
+        env:
+          OSSRH_USERNAME: {% raw %}${{ secrets.OSSRH_USERNAME }}{% endraw %}
+          OSSRH_PASSWORD: {% raw %}${{ secrets.OSSRH_PASSWORD }}{% endraw %}
+          SIGNING_KEY_FILE: {% raw %}${{ runner.temp }}{% endraw %}/signing-key.asc
+          SIGNING_KEY_PASSWORD: {% raw %}${{ secrets.SIGNING_KEY_PASSWORD }}{% endraw %}
+        run: |
+          ./gradlew --no-configuration-cache release $EXTRA_GRADLE_ARGS

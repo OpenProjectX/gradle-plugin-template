@@ -37,8 +37,10 @@ GitHub's **Use this template** button copies placeholders as-is. Cookiecutter is
 ├── plugin/                       # Gradle plugin implementation and TestKit tests
 ├── examples/basic/               # Composite-build example using includeBuild("../..")
 ├── buildSrc/                     # Shared Gradle convention plugins
+├── doc/user-guide.adoc           # AsciiDoc user guide rendered to HTML by `asciidoctor`
+├── .github/workflows/            # Release and GitHub Pages docs publishing workflows
 ├── gradle/libs.versions.toml     # Version catalog
-├── build.gradle.kts              # Publishing, signing, and release configuration
+├── build.gradle.kts              # Publishing, signing, docs, and release configuration
 ├── settings.gradle.kts           # Auto-discovers subprojects, excluding examples
 └── gradle.properties
 ```
@@ -78,6 +80,16 @@ Run the generated example:
 ```bash
 env GRADLE_USER_HOME=/data/.gradle ./gradlew -p examples/basic sayHello --no-configuration-cache
 ```
+
+## Documentation
+
+The generated project ships an AsciiDoc user guide under `doc/user-guide.adoc`. Render it to HTML:
+
+```bash
+./gradlew asciidoctor
+```
+
+Output is written to `build/docs` (`index.html` is the entry point). The `.github/workflows/publish-docs.yml` workflow builds and deploys this guide to GitHub Pages after each successful release.
 
 ## Publishing
 

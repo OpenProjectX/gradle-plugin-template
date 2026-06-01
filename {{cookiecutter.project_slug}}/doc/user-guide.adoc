@@ -1,0 +1,116 @@
+= {{ cookiecutter.plugin_name }} User Guide and Reference
+:toc: left
+:toclevels: 3
+:sectnums:
+:source-highlighter: rouge
+
+++++
+<style>
+.repo-link-topright {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #d0d7de;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0969da;
+  text-decoration: none;
+  font-family: sans-serif;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.repo-link-topright:hover {
+  background: #f6f8fa;
+  text-decoration: none;
+}
+</style>
+<a class="repo-link-topright" href="https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.github_repo }}">GitHub Repo</a>
+++++
+
+== Overview
+
+`{{ cookiecutter.project_slug }}` is a Gradle plugin: {{ cookiecutter.description }}.
+
+The project is organised as a multi-module build:
+
+* `core` — reusable Kotlin library code consumed by the plugin.
+* `plugin` — the Gradle plugin implementation, built with `java-gradle-plugin` and verified with Gradle TestKit functional tests.
+* `examples/basic` — a composite-build example that applies the plugin via `includeBuild("../..")`.
+
+== Requirements
+
+* Java {{ cookiecutter.java_version }} or later
+* Gradle 8.x or later (the build ships a wrapper)
+
+== Applying the Plugin
+
+Add the plugin to the `plugins` block of your build script.
+
+.build.gradle.kts
+[source,kotlin,subs="+attributes"]
+----
+plugins {
+    id("{{ cookiecutter.plugin_id }}") version "0.1.0"
+}
+----
+
+.build.gradle (Groovy)
+[source,groovy,subs="+attributes"]
+----
+plugins {
+    id "{{ cookiecutter.plugin_id }}" version "0.1.0"
+}
+----
+
+== Configuration
+
+The plugin registers the `{{ cookiecutter.extension_name }}` extension, which you can use to configure its behaviour.
+
+.build.gradle.kts
+[source,kotlin]
+----
+{{ cookiecutter.extension_name }} {
+    // Configure the plugin here.
+}
+----
+
+== Tasks
+
+[cols="1,3",options="header"]
+|===
+| Task | Description
+
+| `build`
+| Assembles and tests the project.
+
+| `test`
+| Runs the unit and Gradle TestKit functional tests.
+
+| `asciidoctor`
+| Generates this HTML documentation from the AsciiDoc sources under `doc/`.
+|===
+
+== Building From Source
+
+[source,bash]
+----
+./gradlew build
+----
+
+Run the documentation build:
+
+[source,bash]
+----
+./gradlew asciidoctor
+----
+
+The rendered HTML is written to `build/docs`, with `index.html` as the entry point.
+
+== Releasing
+
+Releases are driven by the `net.researchgate.release` plugin and publish to Maven Central
+via the Sonatype Nexus publish plugin. See the project `README` and the GitHub Actions
+workflows under `.github/workflows` for the automated release and documentation pipelines.
